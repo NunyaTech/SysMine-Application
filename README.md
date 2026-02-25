@@ -1,6 +1,6 @@
 # SysMine-Application
 
-SysMine is an application that provides a detailed description of your computers info. This works on Windows, MacOS and Linux. If you are having any trouble or it does not work on your operating system, you can contact me at aahanstudios@gmail.com.
+SysMine is an application that provides a detailed description of your computer's info. This works on Windows, MacOS and Linux. If you are having any trouble or it does not work on your operating system, you can contact me at aahanstudios@gmail.com.
 
 ## Terms of Use
 
