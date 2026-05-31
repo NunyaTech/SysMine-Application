@@ -1,25 +1,19 @@
-import tkinter as tk
-from tkinter import *
 import os
 import platform
 import subprocess
+import time
 import shutil
 
-# gui
+# -----------------------------
+#  COLOR (Windows only)
+# -----------------------------
+if os.name == "nt":
+    os.system("color 0A")  # Green text
+    os.system("title SysMine")
 
-root = Tk()
-
-root.mainloop()
-
-# Detect OS
-current_os = platform.system().lower()
-
-# Windows-only console styling
-if current_os == "windows":
-    os.system("color 0A")
-    os.system("title SystemInfo")
-
-# ASCII Banner
+# -----------------------------
+#  ASCII BANNER
+# -----------------------------
 banner = r"""
                                                                                                   
       *******                                   *****   **    **                                  
@@ -27,49 +21,70 @@ banner = r"""
    *         **                             **   *  *  ***** *****  ***                           
    **        *                             *    *  *   * **  * **    *                            
    ***          **   ****         ****        *  *    *     *                                    
-  ** ***         **    ***  *    * **** *    ** **    *     *     ***     ***  ****       ***     
- *** ***       **     ****    **  ****     ** **    *     *      ***     **** **** *   * ***    
-   *** ***     **      **    ****          ** **    *     *       **      **   ****   *   ***   
-     *** ***   **      **      ***         ** **    *     *       **      **    **   **    ***  
-       ** ***  **      **        ***       ** **    *     **      **      **    **   ********   
-       ** **  **      **          ***     *  **    *     **      **      **    **   *******    
-         * *   **      **     ****  **        *     *      **     **      **    **   **         
+  ** ***         **    ***  *    * **** *    ** **    *     *     ***     ***  ****       ***    
+ *** ***       **     ****    **  ****     ** **    *     *      ***     **** **** *   * ***   
+   *** ***     **      **    ****          ** **    *     *       **      **   ****   *   ***  
+     *** ***   **      **      ***         ** **    *     *       **      **    **   **    *** 
+       ** ***  **      **        ***       ** **    *     **      **      **    **   ********  
+       ** **  **      **          ***     *  **    *     **      **      **    **   *******   
+         * *   **      **     ****  **        *     *      **     **      **    **   **        
  ***        *     *********    * **** *     ****      *      **     **      **    **   ****    * 
 *  *********        **** ***      ****     *  *****           **    *** *   ***   ***   *******  
 *     *****                ***             *     **                   ***     ***   ***   *****   
                     *****   ***            *                                                      
  **               ********  **              **                                                    
                  *      ****                                                                                                                                                                                                                                                                           
-
-                                                           SystemInfoGatherer
+                                                           SystemInfoGatherer   
+                                                         (Now with network info!)
 """
 
 print(banner)
+print()
 
-# Choose system info command based on OS
-if current_os == "windows":
-    cmd = ["systeminfo"]
-
-elif current_os == "linux":
-    # Prefer hostnamectl if available
-    if shutil.which("hostnamectl"):
-        cmd = ["hostnamectl"]
-    else:
-        cmd = ["uname", "-a"]
-
-elif current_os == "darwin":  # macOS
-    cmd = ["system_profiler", "SPSoftwareDataType"]
-
-else:
-    print("Unsupported OS. Cannot gather system info.")
-    cmd = None
-
-# Run the command
-if cmd:
+# -----------------------------
+#  FUNCTION TO RUN COMMANDS
+# -----------------------------
+def run_command(cmd):
     try:
-        subprocess.check_output(cmd)
+        result = subprocess.run(
+            cmd, shell=True, text=True, capture_output=True
+        )
+        print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
     except Exception as e:
-        print(f"Error running system info command: {e}")
+        print(f"[ERROR] {e}")
 
-# Pause equivalent
+# -----------------------------
+#  OS-SPECIFIC COMMANDS
+# -----------------------------
+system = platform.system()
+
+print("Gathering system information...\n")
+
+if system == "Windows":
+    run_command("systeminfo")
+else:
+    # Linux / macOS
+    if shutil.which("neofetch"):
+        run_command("neofetch")
+    else:
+        run_command("uname -a")
+
 input("\nPress Enter to continue...")
+
+print("\nloading...")
+time.sleep(3)
+
+print("\nGathering network information...\n")
+
+if system == "Windows":
+    run_command("ipconfig /all")
+else:
+    # Linux/macOS
+    if shutil.which("ifconfig"):
+        run_command("ifconfig -a")
+    else:
+        run_command("ip addr show")
+
+input("\nPress Enter to exit...")
